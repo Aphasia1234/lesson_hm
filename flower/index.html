@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+    </head>
+    <body>
+        <script>
+            const dai={
+                name:"戴佑圣",
+                age:"18",
+                sex:"男",
+                hometown:"吉安",
+                hobby:"学习",
+                isSingle:true,
+                //形参
+                sendflower(target){
+                  target.receiveflower(dai);
+
+                }
+            }//声明了常量对象 对象字面量 从字面意义就可以了解对象
+            const xm={
+                name: '小美',
+                age:19,
+                hometown:'九江',
+                sex:'女',
+                xq:50,
+                isSingle:true,
+                hobby:['学习','唱歌','跳舞'],
+                receiveflower(sender){
+                    if(xm.xq<80){
+                        console.log('滚！')
+                    }else {
+                        console.log(sender.name+'送了花,万达走一波')
+                    }
+                }
+            }
+//用js做导演
+            const xh={
+                name:'小红',
+                age:19,
+                hometown:'吉安',
+                receiveflower(sender){
+                    //恒等
+                    // if(sender.name==='戴佑圣'){
+                    //     console.log('让我们在一起吧，暗恋你很久了！')
+                    //     return;
+                    // }
+
+                    // xm.receiveflower(sender)
+setTimeout(function(){
+    xm.xq=99
+    xm.receiveflower(sender)
+},2000)
+            }
+        }
+        </script>
+    </body>
+</html>
