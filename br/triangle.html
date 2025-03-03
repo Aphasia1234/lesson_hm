@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL实现三角形</title>
+</head>
+<body>
+    <canvas id="glCanvas" width="640" height="480"></canvas>
+    <script>
+        function main() {
+            const canvas = document.querySelector("#glCanvas");
+            const gl = canvas.getContext("webgl");
+
+            if (gl === null) {
+                alert("无法初始化 WebGL");
+                return;
+            }
+
+            // 顶点着色器程序,设定顶点位置，旋转
+            const vsSource = `
+                attribute vec4 aVertexPosition; 
+                uniform mat4 uRotationMatrix; 
+                void main() {
+                    gl_Position = uRotationMatrix * aVertexPosition;
+                }
+            `;
+
+            // 片段着色器程序
+            const fsSource = `
+                void main() {
+                    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+                }
+            `;
+
+            // 初始化着色器程序
+            function initShaderProgram(gl, vsSource, fsSource) {
+                const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
+                const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+                const shaderProgram = gl.createProgram();
+                gl.attachShader(shaderProgram, vertexShader);
+                gl.attachShader(shaderProgram, fragmentShader);
+                gl.linkProgram(shaderProgram);
+
+                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                    alert('无法初始化着色器程序: ' + gl.getProgramInfoLog(shaderProgram));
+                    return null;
+                }
+
+                return shaderProgram;
+            }
+
+            // 创建着色器
+            function loadShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert('编译着色器时发生错误: ' + gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+
+                return shader;
+            }
+
+            // 初始化着色器程序
+            const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+
+            // 获取uniform变量位置
+            const rotationMatrix = gl.getUniformLocation(shaderProgram, 'uRotationMatrix');
+
+            // 创建三角形的顶点数据
+            const vertices = new Float32Array([
+                0.0,  0.5,  0.0,  // 顶点
+               -0.5, -0.5,  0.0,  // 左下
+                0.5, -0.5,  0.0   // 右下
+            ]);
+
+            // 创建缓冲区
+            const vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            let rotation = 0;
+
+            function render() {
+                // 计算旋转矩阵
+                const cosB = Math.cos(rotation);
+                const sinB = Math.sin(rotation);
+                const matrix = new Float32Array([
+                    cosB, -sinB, 0.0, 0.0,
+                    sinB,  cosB, 0.0, 0.0,
+                    0.0,   0.0,  1.0, 0.0,
+                    0.0,   0.0,  0.0, 1.0
+                ]);
+
+                // 设置视口
+                gl.viewport(0, 0, canvas.width, canvas.height);
+
+                // 清除画布
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+
+                // 使用着色器程序
+                gl.useProgram(shaderProgram);
+
+                // 设置旋转矩阵
+                gl.uniformMatrix4fv(rotationMatrix, false, matrix);
+
+                // 获取顶点位置属性的位置
+                const vertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+
+                // 启用顶点属性
+                gl.enableVertexAttribArray(vertexPosition);
+                gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
+
+                // 绘制三角形
+                gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+                // 更新旋转角度
+                rotation += 0.01;
+                requestAnimationFrame(render);
+            }
+
+            render();
+        }
+
+        window.onload = main;
+    </script>
+</body>
+</html>
