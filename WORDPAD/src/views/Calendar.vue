@@ -296,7 +296,9 @@ function hasSchedule(date) {
   min-height: 100vh;
   margin: 0;
   padding: 20px;
-  background-color: #fff;
+  background-color: #FFDEE9;
+background-image: linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
+
   border-radius: 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
