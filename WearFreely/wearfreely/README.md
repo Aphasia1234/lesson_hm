@@ -100,3 +100,9 @@
     - 后端cors
   - JWT
     - JWT鉴权
+# 项目启动
+  - npm i
+  - 修改API key
+  - 修改db.js 密码
+  - 启动前端 npm run dev
+  - 启动后端 node app.js
